@@ -49,19 +49,21 @@ Backend is built with **Node.js**, frontend is a simple **HTML dashboard**, and 
 
 ### 📊 Dashboard Sample
 
-<img src="img/student-dashboard.png" width="800"/>
+<img src="img/img1.png" width="800"/>
 
 ### 📘 Project Focus Overview
 
-<img src="img/project-focused.png" width="800"/>
+<img src="img/img2.webp" width="800"/>
 
 ---
 
 ## ⚙️ **Architecture – CI/CD Pipeline Flow**
 
+<img src="img/img4.png" width="900"/>
+
 ### 🔁 CI/CD Full Pipeline Diagram
 
-<img src="img/cicd-flow.png" width="900"/>
+<img src="img/img3.svg" width="900"/>
 
 ---
 
@@ -268,3 +270,4 @@ Student Engineer | DevOps Learner
 If this helped you, **drop a star on GitHub**, makes the project look solid ✨
 
 ---
+
