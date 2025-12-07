@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Student Project Tracker</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding:20px; max-width:800px; margin:auto; }
+    input, select, button { padding:8px; margin:4px 0; }
+    .project { border:1px solid #ddd; padding:8px; border-radius:6px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; }
+    .controls { display:flex; gap:8px; }
+  </style>
+</head>
+<body>
+  <h1>Student Project Tracker</h1>
+  <div>
+    <input id="name" placeholder="Project name" />
+    <select id="status">
+      <option>To-Do</option>
+      <option>In-Progress</option>
+      <option>Done</option>
+    </select>
+    <button id="add">Add</button>
+  </div>
+
+  <h2>Projects</h2>
+  <div id="list">Loading...</div>
+
+  <script>
+    const API = 'http://localhost:4000/api/projects';
+
+    async function fetchProjects() {
+      const res = await fetch(API);
+      const data = await res.json();
+      const list = document.getElementById('list');
+      if (!Array.isArray(data)) { list.innerText = 'Failed to load'; return; }
+      list.innerHTML = '';
+      data.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'project';
+        el.innerHTML = `
+          <div>
+            <strong>${escapeHtml(p.name)}</strong><br/>
+            <small>${p.status} · created ${new Date(p.createdAt).toLocaleString()}</small>
+          </div>
+          <div class="controls">
+            <select data-id="${p.id}" class="upd-status">
+              <option${p.status==='To-Do' ? ' selected' : ''}>To-Do</option>
+              <option${p.status==='In-Progress' ? ' selected' : ''}>In-Progress</option>
+              <option${p.status==='Done' ? ' selected' : ''}>Done</option>
+            </select>
+            <button data-id="${p.id}" class="del">Delete</button>
+          </div>`;
+        list.appendChild(el);
+      });
+    }
+
+    function escapeHtml(str) {
+      return (''+str).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[s]);
+    }
+
+    async function addProject() {
+      const name = document.getElementById('name').value.trim();
+      const status = document.getElementById('status').value;
+      if (!name) { alert('Enter project name'); return; }
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ name, status })
+      });
+      if (res.ok) {
+        document.getElementById('name').value = '';
+        await fetchProjects();
+      } else {
+        const err = await res.json();
+        alert('Error: ' + (err.error || res.statusText));
+      }
+    }
+
+    document.getElementById('add').addEventListener('click', addProject);
+    document.getElementById('list').addEventListener('click', async (e) => {
+      if (e.target.matches('.del')) {
+        const id = e.target.dataset.id;
+        if (!confirm('Delete project?')) return;
+        const res = await fetch(API + '/' + id, { method: 'DELETE' });
+        if (res.ok) await fetchProjects();
+        else { alert('Failed to delete'); }
+      }
+    });
+
+    document.getElementById('list').addEventListener('change', async (e) => {
+      if (e.target.matches('.upd-status')) {
+        const id = e.target.dataset.id;
+        const status = e.target.value;
+        const res = await fetch(API + '/' + id, {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ status })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          alert('Error: ' + (err.error || res.statusText));
+        } else {
+          await fetchProjects();
+        }
+      }
+    });
+
+    // Initial load
+    fetchProjects().catch(err => {
+      document.getElementById('list').innerText = 'Error loading: ' + err.message;
+    });
+  </script>
+</body>
+</html>
