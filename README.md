@@ -45,7 +45,7 @@ Backend is built with **Node.js**, frontend is a simple **HTML dashboard**, and 
 
 ## 🎨 **Project UI Preview**
 
-> *(Add your images into an `img/` folder before pushing to GitHub)*
+> *(This ui is only for making some intrest )*
 
 ### 📊 Dashboard Sample
 
@@ -270,4 +270,5 @@ Student Engineer | DevOps Learner
 If this helped you, **drop a star on GitHub**, makes the project look solid ✨
 
 ---
+
 
